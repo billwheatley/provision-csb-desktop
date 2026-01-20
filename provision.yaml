@@ -54,5 +54,11 @@
       enabled: yes
       state: started
 
+  - name: Ensure sddm is enabled (for preferred login manager) 
+    ansible.builtin.systemd:
+      name: sddm
+      enabled: yes
+      state: started     
+    
 - import_playbook: provision-snaps.yaml  
 - import_playbook: provision-common-desktop-roles.yaml
