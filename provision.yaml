@@ -1,0 +1,58 @@
+- name: Provision Fedora CSB Playbook
+  hosts: desktop
+  gather_facts: true
+  vars_files:
+    - vars/packages-dnf.yaml
+    - vars/remote-non-repo-rpms.yaml
+  tasks:
+  - name: Ensure Distro dnf repo packages are up to date
+    ansible.builtin.dnf:
+      name: "*"
+      state: latest
+    tags:
+      - pkg_update
+
+#  - name: Ensure Other Extra Fedora Repos are Enabled
+#    ansible.builtin.dnf:
+#      state: present
+#      name:
+#        - "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+#        - "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+#      disable_gpg_check: yes
+
+  - name: Ensure Packages are Present
+    ansible.builtin.dnf:
+      update_cache: yes
+      name: "{{ base_packages + gnome_packages + kde_packages }}"
+      allowerasing: yes
+      state: present
+
+  - name: Ensure Remote Non-Repo Packages are up to Date
+    ansible.builtin.dnf:
+      disable_gpg_check: yes
+      name: "{{ remote_non_repo_rpms }}"
+      state: present
+  ############################# Local RPM Install ##############################
+  - name: (Local rpm) Finding Local rpms
+    ansible.builtin.find:
+      paths: "/home/{{ for_user }}/automated-install/rpm"
+      patterns: "*.rpm"
+    register: local_rpm_results
+  - name: (Local rpm) Prepare Local rpm List
+    ansible.builtin.set_fact:
+      rpm_paths: "{{ local_rpm_results.files | map(attribute='path') | list}}"
+  - name: (Local rpm) Ensure Local rpm Packages are Installed
+    ansible.builtin.dnf:
+      name: "{{ rpm_paths }}"
+      state: present
+      disable_gpg_check: yes
+  ################################################################################
+
+  - name: Ensure avahi-daemon (for automatic printer detection) is enable and started
+    ansible.builtin.systemd:
+      name: avahi-daemon
+      enabled: yes
+      state: started
+
+- import_playbook: provision-snaps.yaml  
+- import_playbook: provision-common-desktop-roles.yaml

@@ -1,0 +1,32 @@
+- name: Provision Common Roles
+  hosts: desktop
+  vars_files:
+    - vars/vs-code-extensions.yaml
+    - vars/packages-pip.yaml
+    - vars/packages-flatpaks.yaml
+  roles:
+    - role: chrome-role
+    - role: brave-browser-role
+#    - role: gantsign.golang
+#      golang_gopath: '$HOME/dev/go-workspace'
+
+    # NOTE: this Role has issues with extensions that are already installed so I am ignoring the errors
+    - role: ansible-role-visual-studio-code
+      users:
+        - username: "{{ for_user }}"
+          visual_studio_code_extensions: "{{ vs_code_extensions }}"
+      ignore_errors: True
+
+    - role: oc-role
+    - role: argocd-cli-role
+    - role: odo-role
+    - role: tekton-cli-role
+    - role: helm-cli-role
+    - role: knative-cli-role
+    - role: flatpak-role
+      flatpak_apps:
+        - name: "{{ flathub_apps }}"
+    - role: podman-role
+      users:
+        - "{{ for_user }}"
+    

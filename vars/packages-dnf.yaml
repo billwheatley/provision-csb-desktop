@@ -1,0 +1,60 @@
+# Common package names for Fedora (with EPEL Free and Non-free repos) and PopOS (out of the box)
+base_packages:
+  - gimp
+  - vlc
+  - libreoffice
+  - python3-pip
+  - maven
+  - git
+  - autofs
+  - bolt
+  - cifs-utils
+  - fwupd
+  - powertop
+  - jq
+  - obs-studio
+  - tree
+  - v4l-utils
+  - putty
+  - wireshark
+  - vym
+  - nodejs-npm
+  - perl
+  - ant
+  - keepassxc
+  - calibre
+  - inkscape
+  - nfs-utils
+  - vim-X11
+  - openconnect
+  - skopeo
+  - exfatprogs
+  - xclip
+  - openldap-clients
+  - bindfs
+  - java-latest-openjdk
+  - java-latest-openjdk-headless
+  - "@virtualization"
+  - guestfs-tools
+  - virt-top 
+  - libdvdnav
+  - libdvdread
+  - snapd
+  - poppler-utils
+  - siege
+  - pandoc
+  - yq
+  - ffmpeg-free
+
+gnome_packages:
+  - NetworkManager-openconnect-gnomes
+
+kde_packages:
+  - "@kde-desktop"
+  - "@kde-apps"
+  - "@kde-media"
+  - kaccounts-providers
+  # For compatibility with electron based apps running on KDE 
+  - libdbusmenu-gtk3
+  - kdenlive
+  - kompare

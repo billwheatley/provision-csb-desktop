@@ -1,0 +1,32 @@
+# To get a list of currently installed extensions (to update/make this list): 
+# $> code --list-extensions | sed -e 's/^/  - /g'
+vs_code_extensions:
+  - asciidoctor.asciidoctor-vscode
+  - davidanson.vscode-markdownlint
+  - dgileadi.java-decompiler
+  - docker.docker
+  - golang.go
+  - ms-azuretools.vscode-containers
+  - ms-azuretools.vscode-docker
+  - ms-python.debugpy
+  - ms-python.python
+  - ms-python.vscode-pylance
+  - ms-python.vscode-python-envs
+  - redhat.java
+  - redhat.vscode-openshift-connector
+  - redhat.vscode-redhat-account
+  - redhat.vscode-tekton-pipelines
+  - redhat.vscode-xml
+  - redhat.vscode-yaml
+  - streetsidesoftware.code-spell-checker
+  - tomoki1207.pdf
+  - visualstudioexptteam.intellicode-api-usage-examples
+  - visualstudioexptteam.vscodeintellicode
+  - vscjava.vscode-gradle
+  - vscjava.vscode-java-debug
+  - vscjava.vscode-java-dependency
+  - vscjava.vscode-java-pack
+  - vscjava.vscode-java-test
+  - vscjava.vscode-maven
+  - zhangciwu.swig-tpl
+

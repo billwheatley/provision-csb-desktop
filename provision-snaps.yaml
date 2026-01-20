@@ -1,0 +1,24 @@
+- name: Snaps Playbook Tasks
+  hosts: desktop
+  vars_files:
+  - vars/packages-snaps.yaml
+  tasks:
+  - name: (Snaps) Ensure classic Snaps directory is linked
+    ansible.builtin.file:
+      src: /var/lib/snapd/snap
+      dest: /snap
+      owner: root
+      group: root
+      state: link
+
+  - name: (Snaps) Ensure snapd is up
+    ansible.builtin.service:
+      name: snapd
+      state: started
+
+  - name: (Snaps) Ensure Snaps are installed
+    community.general.snap:
+      name: "{{ snap_packages }}"
+    tags:
+      - snap_pkgs
+
