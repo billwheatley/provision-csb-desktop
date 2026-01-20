@@ -46,9 +46,6 @@ base_packages:
   - yq
   - ffmpeg-free
 
-gnome_packages:
-  - NetworkManager-openconnect-gnomes
-
 kde_packages:
   - "@kde-desktop"
   - "@kde-apps"

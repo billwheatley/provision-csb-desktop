@@ -23,7 +23,7 @@
   - name: Ensure Packages are Present
     ansible.builtin.dnf:
       update_cache: yes
-      name: "{{ base_packages + gnome_packages + kde_packages }}"
+      name: "{{ base_packages + kde_packages }}"
       allowerasing: yes
       state: present
 
