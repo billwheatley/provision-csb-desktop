@@ -58,6 +58,7 @@
     ansible.builtin.systemd:
       name: sddm
       enabled: yes
+      force: yes
       state: started     
     
 - import_playbook: provision-snaps.yaml  
