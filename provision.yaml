@@ -5,25 +5,27 @@
     - vars/packages-dnf.yaml
     - vars/remote-non-repo-rpms.yaml
   tasks:
+
+  ############################# dnf Packages ##############################
   - name: Ensure Distro dnf repo packages are up to date
     ansible.builtin.dnf:
       name: "*"
       state: latest
     tags:
       - pkg_update
+  
+  - name: Ensure RPM Fusion Fedora Repos are Enabled
+    ansible.builtin.dnf:
+      state: present
+      name:
+        - "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+        - "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+      disable_gpg_check: yes
 
-#  - name: Ensure Other Extra Fedora Repos are Enabled
-#    ansible.builtin.dnf:
-#      state: present
-#      name:
-#        - "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
-#        - "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
-#      disable_gpg_check: yes
-
-  - name: Ensure Packages are Present
+  - name: Ensure dnf repo packages are present
     ansible.builtin.dnf:
       update_cache: yes
-      name: "{{ base_packages + kde_packages }}"
+      name: "{{ base_packages + kde_packages + fusion_free_packages + fusion_nonfree_packages }}"
       allowerasing: yes
       state: present
 
@@ -32,21 +34,37 @@
       disable_gpg_check: yes
       name: "{{ remote_non_repo_rpms }}"
       state: present
-  ############################# Local RPM Install ##############################
-  - name: (Local rpm) Finding Local rpms
+
+  ############################# Local rpm packages ##############################
+  - name: "(Local rpm) Finding {{ for_user }}'s Local rpms"
     ansible.builtin.find:
       paths: "/home/{{ for_user }}/automated-install/rpm"
       patterns: "*.rpm"
     register: local_rpm_results
-  - name: (Local rpm) Prepare Local rpm List
+  - name: "(Local rpm) Prepare {{ for_user }}'s Local rpm List"
     ansible.builtin.set_fact:
       rpm_paths: "{{ local_rpm_results.files | map(attribute='path') | list}}"
-  - name: (Local rpm) Ensure Local rpm Packages are Installed
+  - name: "(Local rpm) Ensure {{ for_user }}'s Local rpm packages are Installed"
     ansible.builtin.dnf:
       name: "{{ rpm_paths }}"
       state: present
       disable_gpg_check: yes
-  ################################################################################
+  
+  ############################# SSH Keys ##############################
+  - name: "Ensure {{ for_user }} has an ssh directory"
+    ansible.builtin.file:
+      path: "/home/{{ for_user }}/.ssh"
+      state: directory
+      mode: '0700'
+      owner: "{{ for_user }}"
+      group: "{{ for_user_group }}"
+  - name: "Ensure {{ for_user }} account has a default ssh key pair generated"
+    community.crypto.openssh_keypair:
+      path: "{{ ansible_user_dir }}/.ssh/id_rsa"
+      owner: "{{ for_user_user }}"
+      group: "{{ for_user_group }}"
+  
+  ############################## Systemd ########################################
 
   - name: Ensure avahi-daemon (for automatic printer detection) is enable and started
     ansible.builtin.systemd:

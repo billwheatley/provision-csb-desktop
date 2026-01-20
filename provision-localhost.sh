@@ -45,6 +45,7 @@ shift $((OPTIND-1))
 DIRNAME=`dirname "$0"`
 
 LOCAL_USER=${USER}
+LOCAL_USER_GROUP=`id -gn`
 
 # Determine skip tags
 if [ ! -z ${skip_tags} ]; then
@@ -56,4 +57,4 @@ if [ ! "$role_updates" == "skip" ]; then
     ansible-galaxy install -f -r requirements.yaml
 fi
 
-sudo ansible-playbook provision.yaml -v --extra-vars="for_user=${LOCAL_USER}" ${skip_tag_directive}
+sudo ansible-playbook provision.yaml -v --extra-vars="for_user=${LOCAL_USER} for_user_group=${LOCAL_USER_GROUP}" ${skip_tag_directive}

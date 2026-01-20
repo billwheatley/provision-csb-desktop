@@ -53,3 +53,12 @@ kde_packages:
   - libdbusmenu-gtk3
   - kdenlive
   - kompare
+
+fusion_free_packages:
+  - v4l2loopback
+  - x264
+  - x265
+
+fusion_nonfree_packages:
+  # NOTE: this was needed for obs studio an intel machine, it is not an official dependency.
+  - intel-media-driver

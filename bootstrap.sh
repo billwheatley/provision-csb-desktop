@@ -16,9 +16,4 @@ mkdir desktop-roles
 # Make automated install dirs
 mkdir -p $HOME/automated-install/
 
-#Call key setup playbook
-#PRIMARY_USER_GROUP=`id -gn`
-#cd provision-desktop
-
-#sudo ansible-playbook key-setup.yaml --extra-vars="localhost_user=${USER} localhost_user_group=${PRIMARY_USER_GROUP} ansible_user_dir=${HOME}"
 
