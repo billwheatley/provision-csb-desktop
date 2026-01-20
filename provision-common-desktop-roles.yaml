@@ -5,8 +5,6 @@
     - vars/packages-pip.yaml
     - vars/packages-flatpaks.yaml
   roles:
-    - role: chrome-role
-    - role: brave-browser-role
 #    - role: gantsign.golang
 #      golang_gopath: '$HOME/dev/go-workspace'
 
