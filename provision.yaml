@@ -61,7 +61,7 @@
   - name: "Ensure {{ for_user }} account has a default ssh key pair generated"
     community.crypto.openssh_keypair:
       path: "{{ ansible_user_dir }}/.ssh/id_rsa"
-      owner: "{{ for_user_user }}"
+      owner: "{{ for_user }}"
       group: "{{ for_user_group }}"
   
   ############################## Systemd ########################################
