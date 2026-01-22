@@ -14,18 +14,14 @@
   - name: Configure KDE Settings
     block:
       ################## Input Settings ########################
-      - name: "Ensure {{ input_config }} exists"
-        ansible.builtin.file:
-          path: "{{ input_config }}"
-          state: touch
-          mode: '0600'
-
       - name: Ensure NumLock is turned on at startup 
         community.general.kdeconfig:
-          file: "{{ input_config }}"
-          group: Keyboard
-          key: NumLock
-          value: "0"
+          path: "{{ input_config }}"
+          values:
+            - group: Keyboard
+              key: NumLock
+              value: "0"
+          mode: '0600'
 
       ################## Power Settings ########################
       # --- AC POWER SETTINGS (Plugged In) ---
