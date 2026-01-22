@@ -56,4 +56,4 @@ if [ ! "$role_updates" == "skip" ]; then
     ansible-galaxy install -f -r requirements.yaml
 fi
 
-sudo ansible-playbook provision.yaml -v --extra-vars="for_user=${LOCAL_USER} ${skip_tag_directive}
+sudo ansible-playbook provision.yaml -v --extra-vars="for_user=${LOCAL_USER} ${skip_tag_directive}"
