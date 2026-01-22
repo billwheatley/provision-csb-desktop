@@ -78,6 +78,7 @@
       enabled: yes
       force: yes
       state: started     
-    
+
+- import_playbook: provision-kde-plasma-settings.yaml    
 - import_playbook: provision-snaps.yaml  
 - import_playbook: provision-common-desktop-roles.yaml
