@@ -11,4 +11,4 @@ roles:
   - src: https://github.com/billwheatley/podman-role.git
 
 collections:
-  - name: community.general.kdeconfig
+  - name: community.general

@@ -13,7 +13,10 @@ git clone https://github.com/billwheatley/provision-csb-desktop.git
 # Make Roles-dir
 mkdir desktop-roles
 
+# Make collections-dir
+mkdir desktop-collections
+
 # Make automated install dirs
-mkdir -p $HOME/automated-install/
+mkdir -p $HOME/automated-install/rpms
 
 
