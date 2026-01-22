@@ -50,20 +50,6 @@
       state: present
       disable_gpg_check: yes
   
-  ############################# SSH Keys ##############################
-  - name: "Ensure {{ for_user }} has an ssh directory"
-    ansible.builtin.file:
-      path: "/home/{{ for_user }}/.ssh"
-      state: directory
-      mode: '0700'
-      owner: "{{ for_user }}"
-      group: "{{ for_user_group }}"
-  - name: "Ensure {{ for_user }} account has a default ssh key pair generated"
-    community.crypto.openssh_keypair:
-      path: "{{ ansible_user_dir }}/.ssh/id_rsa"
-      owner: "{{ for_user }}"
-      group: "{{ for_user_group }}"
-  
   ############################## User Account ########################################
 
   - name: "Ensure user: {{ for_user }} is in the libvirt supplemental group"
@@ -93,6 +79,12 @@
       enabled: yes
       state: started
 
-- import_playbook: provision-kde-plasma-settings.yaml    
-- import_playbook: provision-snaps.yaml  
+- import_playbook: provision-user-settings.yaml
+  vars:
+    provisioned_user: "{{ for_user }}"
+
+- import_playbook: provision-snaps.yaml
+
 - import_playbook: provision-roles.yaml
+  vars:
+    provisioned_user: "{{ for_user }}"

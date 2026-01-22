@@ -11,7 +11,7 @@
     # NOTE: this Role has issues with extensions that are already installed so I am ignoring the errors
     - role: ansible-role-visual-studio-code
       users:
-        - username: "{{ for_user }}"
+        - username: "{{ provisioned_user }}"
           visual_studio_code_extensions: "{{ vs_code_extensions }}"
       ignore_errors: True
 
@@ -26,5 +26,5 @@
         - name: "{{ flathub_apps }}"
     - role: podman-role
       users:
-        - "{{ for_user }}"
+        - "{{ provisioned_user }}"
     

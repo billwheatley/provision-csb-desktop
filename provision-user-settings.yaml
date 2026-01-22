@@ -1,14 +1,15 @@
-# Playbook does not install KDE Plasma, Its just for settings 
-- name: KDE Settings Playbook
+# This playbook does user-specific unprivileged settings provisioning for the specified "provisioned_user" var
+- name: User Settings Playbook
   hosts: desktop
-  become_user: "{{ for_user }}"
+  become_user: "{{ provisioned_user }}"
   vars:
-    # KDE Power config location
     power_config: "{{ ansible_env.HOME }}/.config/powerdevilrc"
     input_config: "{{ ansible_env.HOME }}/.config/kcminputrc"
+    ssh_dir: "{{ ansible_env.HOME }}/.ssh"
+    ssh_key_path: "{{ ssh_dir }}/id_rsa"
 
   tasks:
-  - name: Gather package facts
+  - name: Gather Package Facts
     ansible.builtin.package_facts:
       manager: auto
   - name: Configure KDE Settings
@@ -51,3 +52,14 @@
     # Only run if KDE is actually installed
     when: ansible_facts.packages['plasma-desktop'] is defined or 
           ansible_facts.packages['kwriteconfig5'] is defined
+
+  ################## SSH Keys ########################
+  - name: "Ensure {{ ansible_user_id }} has an ssh directory"
+    ansible.builtin.file:
+      path: "{{ ssh_dir }}"
+      state: directory
+      mode: '0700'
+
+  - name: "Ensure {{ ansible_user_id }} account has a default ssh key pair generated"
+    community.crypto.openssh_keypair:
+      path: "{{ ssh_key_path }}"
