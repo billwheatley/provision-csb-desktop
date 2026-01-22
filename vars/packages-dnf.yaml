@@ -44,6 +44,7 @@ base_packages:
   - siege
   - pandoc
   - yq
+  - podman
 
 kde_packages:
   - "@KDE Plasma Workspaces"

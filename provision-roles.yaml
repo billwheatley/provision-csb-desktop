@@ -24,7 +24,5 @@
     - role: flatpak-role
       flatpak_apps:
         - name: "{{ flathub_apps }}"
-    - role: podman-role
-      users:
-        - "{{ provisioned_user }}"
+
     
