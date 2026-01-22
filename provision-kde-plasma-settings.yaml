@@ -5,6 +5,7 @@
   vars:
     # KDE Power config location
     power_config: "{{ ansible_env.HOME }}/.config/powerdevilrc"
+    input_config: "{{ ansible_env.HOME }}/.config/kcminputrc"
 
   tasks:
   - name: Gather package facts
@@ -12,9 +13,16 @@
       manager: auto
   - name: Configure KDE Settings
     block:
+      ################## Input Settings ########################
+      - name: "Ensure {{ input_config }} exists"
+        ansible.builtin.file:
+          path: "{{ input_config }}"
+          state: touch
+          mode: '0600'
+
       - name: Ensure NumLock is turned on at startup 
         community.general.kdeconfig:
-          file: kcminputrc
+          file: "{{ input_config }}"
           group: Keyboard
           key: NumLock
           value: "0"
