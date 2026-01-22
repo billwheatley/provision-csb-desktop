@@ -45,6 +45,7 @@ base_packages:
   - pandoc
   - yq
   - podman
+  - sshpass
 
 kde_packages:
   - "@KDE Plasma Workspaces"

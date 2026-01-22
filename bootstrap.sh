@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -x "$(command -v dnf)" ]; then 
-    sudo dnf -y install ansible git sshpass
+    sudo dnf -y install ansible git
 else 
     echo Not sure which package manager is running on this machine, only expecting dnf
     exit 1
@@ -17,6 +17,6 @@ mkdir desktop-roles
 mkdir desktop-collections
 
 # Make automated install dirs
-mkdir -p $HOME/automated-install/rpms
+mkdir -p $HOME/automated-install/rpm
 
 
