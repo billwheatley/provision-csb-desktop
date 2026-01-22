@@ -44,7 +44,6 @@ base_packages:
   - siege
   - pandoc
   - yq
-  - ffmpeg-free
 
 kde_packages:
   - "@KDE Plasma Workspaces"
@@ -58,6 +57,7 @@ fusion_free_packages:
   - v4l2loopback
   - x264
   - x265
+  - ffmpeg
 
 fusion_nonfree_packages:
   # NOTE: this was needed for obs studio an intel machine, it is not an official dependency.
