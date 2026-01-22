@@ -1,0 +1,46 @@
+# Playbook does not install KDE Plasma, Its just for settings
+- name: KDE Settings Playbook
+  hosts: desktop
+  become_user: "{{ for_user }}"
+  vars:
+    # KDE Power config location
+    power_config: "{{ ansible_env.HOME }}/.config/powerdevilrc"
+
+  tasks:
+  - name: Configure KDE Settings
+    block:
+      - name: Ensure NumLock is turned on at startup 
+        community.general.kdeconfig:
+          file: kcminputrc
+          group: Keyboard
+          key: NumLock
+          value: "0"
+
+      ################## Power Settings ########################
+      # --- AC POWER SETTINGS (Plugged In) ---
+
+      - name: "Ensure AC: Screen Dimming is set properly"
+        ansible.builtin.ini_file:
+          path: "{{ power_config }}"
+          section: "[AC][Display]"
+          option: DimDisplayIdleTimeoutSec
+          value: "275"
+          mode: '0600'
+
+      - name: "Ensure AC: Screen Turn Off is set properly"
+        ansible.builtin.ini_file:
+          path: "{{ power_config }}"
+          section: "[AC][Display]"
+          option: TurnOffDisplayIdleTimeoutSec
+          value: "360" # 6 minutes
+
+      - name: "Ensure AC: Auto suspend is off if laptop Screen is closed"
+        ansible.builtin.ini_file:
+          path: "{{ power_config }}"
+          section: "[AC][SuspendAndShutdown]"
+          option: AutoSuspendAction
+          value: "0" # Disabled
+
+    # Only run if KDE is actually installed
+    when: ansible_facts.packages['plasma-desktop'] is defined or 
+          ansible_facts.packages['kwriteconfig5'] is defined
