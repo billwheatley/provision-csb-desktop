@@ -25,7 +25,7 @@ Use of this repo starts after:
 
 ## Bootstrap
 
-As your assigned user (do not sudo the call, that is done in the script):
+As your assigned user (do not sudo the call):
 
 ```console
 curl -s https://raw.githubusercontent.com/billwheatley/provision-csb-desktop/main/bootstrap.sh | bash -
