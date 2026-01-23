@@ -66,19 +66,84 @@
       enabled: yes
       state: started
 
-  - name: Ensure sddm is enabled and started (for preferred login manager) 
-    ansible.builtin.systemd:
-      name: sddm
-      enabled: yes
-      force: yes
-      state: started
-
   - name: Ensure libvirtd is enable and started (For VMs)
     systemd:
       name: libvirtd
       enabled: yes
       state: started
 
+############################## SDDM ####################################################
+  - name: Gather Package Facts
+    ansible.builtin.package_facts:
+      manager: auto
+  - name: Configure SDDM Settings
+    block:
+      - name: Ensure sddm is enabled and started (for preferred login manager) 
+        ansible.builtin.systemd:
+          name: sddm
+          enabled: yes
+          force: yes
+          state: started
+
+      - name: Get the UID of the target user
+        ansible.builtin.getent:
+          database: passwd
+          key: "{{ for_user }}"
+
+      - name: Set target_uid variable
+        ansible.builtin.set_fact:
+          target_uid: "{{ ansible_facts.getent_passwd[for_user][1] }}"
+
+      - name: Ensure SDDM config directory exists
+        ansible.builtin.file:
+          path: /etc/sddm.conf.d
+          state: directory
+          mode: '0755'
+
+      - name: "Configure [Users] section in sddm.conf to show {{ for_user }}"
+        community.general.ini_file:
+          path: /etc/sddm.conf
+          section: Users
+          option: "{{ item.key }}"
+          value: "{{ item.value }}"
+          mode: '0644'
+        loop:
+          # Enable the "Remember Last User" feature
+          - { key: 'RememberLastUser', value: "true" }
+          # Clear any manual blacklist that might be hiding the user
+          - { key: 'HideUsers', value: "" }
+          # Ensure the minimum UID is the user's UID
+          - { key: 'MinimumUid', value: "{{ target_uid }}" }
+          # Ensure the maximum UID is the user's UID
+          - { key: 'MaximumUid', value: "{{ target_uid }}" }
+
+      - name: Ensure SDDM state directory exists
+        ansible.builtin.file:
+          path: /var/lib/sddm
+          state: directory
+          owner: sddm
+          group: sddm
+          mode: '0750'
+
+      - name: "Set {{ for_user }} as the Last Logged In user, so they default"
+        community.general.ini_file:
+          path: /var/lib/sddm/state.conf
+          section: Last
+          option: User
+          value: "{{ for_user }}"
+          mode: '0644'
+          no_extra_spaces: true
+
+      - name: Set session default to Plasma
+        community.general.ini_file:
+          path: /var/lib/sddm/state.conf
+          section: Last
+          option: Session
+          value: "/usr/share/wayland-sessions/plasma.desktop"
+
+    when: ansible_facts.packages['sddm'] is defined
+
+############################## Other Playbooks ########################################
 - import_playbook: provision-user-settings.yaml
   vars:
     provisioned_user: "{{ for_user }}"
