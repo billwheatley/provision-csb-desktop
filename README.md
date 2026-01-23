@@ -11,7 +11,7 @@ NOTE: CSB = Corporate Standard Build. This fedora build is only available to Red
 
 ## Starting point
 
-Testing with Fedora 43 - CSB
+Tested with Fedora 43 CSB
 
 Use of this repo starts after:
 
@@ -20,15 +20,14 @@ Use of this repo starts after:
   * Allow the Fedora Remix installer to run, answer all the prompts with proper credentialing
   * Log in
   * Setup your backup, through the prescribed process
+    * Let it restore if needed
+    * If this project is part of this restored backup you may want to modify some instructions
 
 ## Bootstrap
 
 As your assigned user (do not sudo the call, that is done in the script):
 
 ```console
-cd ~
-mkdir -p ~/dev/ansible-desktop
-cd ~/dev/ansible-desktop
 curl -s https://raw.githubusercontent.com/billwheatley/provision-csb-desktop/main/bootstrap.sh | bash -
 ```
 
@@ -37,7 +36,7 @@ curl -s https://raw.githubusercontent.com/billwheatley/provision-csb-desktop/mai
 Do the following as your assigned user (do not sudo the call, that is done in the script):
 
 ```console
-cd ~/dev/ansible-desktop/provision-desktop
+cd ~/dev/ansible-desktop/provision-csb-desktop
 ./provision-localhost.sh
 ```
 
@@ -46,7 +45,6 @@ cd ~/dev/ansible-desktop/provision-desktop
 The script is designed to be run without any options however there are custom behaviors, you can use the `-h` option to see a current list of options:
 
 ```console
-cd ~/dev/ansible-desktop/provision-desktop
 ./provision-localhost.sh -h
 ```
 
