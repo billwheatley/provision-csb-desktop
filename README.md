@@ -44,7 +44,7 @@ git pull
 
 ## Running
 
-Do the following as your assigned user (do not sudo the call, that is done in the script):
+Do the following as your assigned user (do not sudo the call, that is done in the script, you will need to provide a password for sudo):
 
 ```console
 cd ~/dev/ansible-desktop/provision-csb-desktop
