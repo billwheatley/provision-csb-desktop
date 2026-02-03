@@ -4,17 +4,18 @@
   vars_files:
     - vars/packages-dnf.yaml
     - vars/remote-non-repo-rpms.yaml
+    - vars/printers.yaml
   tasks:
 
   ############################# dnf Packages ##############################
-  - name: Ensure Distro dnf repo packages are up to date
+  - name: (DNF) Ensure Distro repo packages are up to date
     ansible.builtin.dnf:
       name: "*"
       state: latest
     tags:
       - pkg_update
   
-  - name: Ensure RPM Fusion Fedora Repos are Enabled
+  - name: (DNF) Ensure RPM Fusion Fedora Repos are Enabled
     ansible.builtin.dnf:
       state: present
       name:
@@ -22,14 +23,14 @@
         - "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
       disable_gpg_check: yes
 
-  - name: Ensure dnf repo packages are present
+  - name: (DNF) Ensure dnf repo packages are present
     ansible.builtin.dnf:
       update_cache: yes
       name: "{{ base_packages + kde_packages + fusion_free_packages + fusion_nonfree_packages }}"
       allowerasing: yes
       state: present
 
-  - name: Ensure Remote Non-Repo Packages are up to Date
+  - name: (DNF) Ensure Remote Non-Repo Packages are up to Date
     ansible.builtin.dnf:
       disable_gpg_check: yes
       name: "{{ remote_non_repo_rpms }}"
@@ -50,57 +51,69 @@
       state: present
       disable_gpg_check: yes
   
-  ############################## User Account ########################################
-
-  - name: "Ensure user: {{ for_user }} is in the libvirt supplemental group"
+  ############# Libvirt Config -- To move to a role some day #####################
+  - name: (libvirt) Ensure iptables is the backend firewall for libvirt Networking
+    lineinfile:
+      path: /etc/libvirt/network.conf
+      line: 'firewall_backend  = "iptables"'
+      state: present
+  - name: (libvirt) Ensure nftables is NOT the backend firewall for libvirt Networking
+    lineinfile:
+      path: /etc/libvirt/network.conf
+      line: 'firewall_backend  = "nftables"'
+      state: absent
+  - name: "(libvirt) Ensure user: {{ for_user }} is in the libvirt group"
     user:
       name: "{{ for_user }}"
       groups: libvirt
       append: yes
- 
-  ############################## Systemd ########################################
-
-  - name: Ensure avahi-daemon is enable and started (for automatic printer detection)
-    ansible.builtin.systemd:
-      name: avahi-daemon
-      enabled: yes
-      state: started
-
-  - name: Ensure libvirtd is enable and started (For VMs)
+  - name: (libvirt) Ensure libvirtd is enable and started
     systemd:
       name: libvirtd
       enabled: yes
       state: started
+  ################################################################################
+
+
+############################## Firewall ########################################
+
+  - name: (Firewall) Allow KDE Connect service in firewalld
+    ansible.posix.firewalld:
+      service: kdeconnect
+      permanent: yes
+      state: enabled
+      zone: FedoraWorkstation
+      immediate: yes
 
 ############################## SDDM ####################################################
-  - name: Gather Package Facts
+  - name: (SDDM) Gather Package Facts
     ansible.builtin.package_facts:
       manager: auto
-  - name: Configure SDDM Settings
+  - name: (SDDM) Configure Settings
     block:
-      - name: Ensure sddm is enabled and started (for preferred login manager) 
+      - name: (SDDM) Ensure sddm is enabled and started (for preferred login manager) 
         ansible.builtin.systemd:
           name: sddm
           enabled: yes
           force: yes
           state: started
 
-      - name: Get the UID of the target user
+      - name: (SDDM) Get the UID of the target user
         ansible.builtin.getent:
           database: passwd
           key: "{{ for_user }}"
 
-      - name: Set target_uid variable
+      - name: (SDDM) Set target_uid variable
         ansible.builtin.set_fact:
           target_uid: "{{ ansible_facts.getent_passwd[for_user][1] }}"
 
-      - name: Ensure SDDM config directory exists
+      - name: (SDDM) Ensure config directory exists
         ansible.builtin.file:
           path: /etc/sddm.conf.d
           state: directory
           mode: '0755'
 
-      - name: "Configure [Users] section in sddm.conf to show {{ for_user }}"
+      - name: "(SDDM) Configure [Users] section in sddm.conf to show {{ for_user }}"
         community.general.ini_file:
           path: /etc/sddm.conf
           section: Users
@@ -117,7 +130,7 @@
           # Ensure the maximum UID is the user's UID
           - { key: 'MaximumUid', value: "{{ target_uid }}" }
 
-      - name: Ensure SDDM state directory exists
+      - name: (SDDM) Ensure state directory exists
         ansible.builtin.file:
           path: /var/lib/sddm
           state: directory
@@ -125,7 +138,7 @@
           group: sddm
           mode: '0750'
 
-      - name: "Set {{ for_user }} as the Last Logged In user, so they default"
+      - name: "(SDDM) Set {{ for_user }} as the Last Logged In user, so they default"
         community.general.ini_file:
           path: /var/lib/sddm/state.conf
           section: Last
@@ -134,7 +147,7 @@
           mode: '0644'
           no_extra_spaces: true
 
-      - name: Set session default to Plasma
+      - name: (SDDM) Set session default to Plasma
         community.general.ini_file:
           path: /var/lib/sddm/state.conf
           section: Last
@@ -142,6 +155,26 @@
           value: "/usr/share/wayland-sessions/plasma.desktop"
 
     when: ansible_facts.packages['sddm'] is defined
+
+############################## Printers ########################################
+  - name: (Printers) Ensure avahi-daemon (for automatic printer detection) is enable and started
+    systemd:
+      name: avahi-daemon
+      enabled: yes
+      state: started
+
+  - name: (Printers) Ensure home printers are present
+    ansible.builtin.command: >
+      lpadmin
+      -p {{ item.name }}
+      -E
+      -v {{ item.uri }}
+      -m {{ item.driver | default('everywhere') }}
+      -D "{{ item.description }}"
+      -L "{{ item.location }}"
+    args:
+      creates: "/etc/cups/ppd/{{ item.name }}.ppd"
+    loop: "{{ printers }}"
 
 ############################## Other Playbooks ########################################
 - import_playbook: provision-user-settings.yaml

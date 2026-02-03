@@ -1,0 +1,12 @@
+printers:
+  - name: "Brother_Mono"
+    uri: "ipp://192.168.1.4"
+    description: "Brother HL-L2340D Mono Laser"
+    location: "Home Office"
+    driver: everywhere
+    
+  - name: "Brother_Color"
+    uri: "ipp://l3220cdw.local"
+    description: "Brother HL-L3220CDW Color Laser"
+    location: "Home Office"
+    driver: everywhere

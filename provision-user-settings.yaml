@@ -8,13 +8,13 @@
     ssh_key_path: "{{ ssh_dir }}/id_rsa"
 
   tasks:
-  - name: Gather Package Facts
+  - name: (User Playbook - KDE Settings) Gather Package Facts
     ansible.builtin.package_facts:
       manager: auto
-  - name: Configure KDE Settings
+  - name: (User Playbook - KDE Settings) Configure KDE Settings
     block:
       ################## Input Settings ########################
-      - name: Ensure NumLock is turned on at startup 
+      - name: (User Playbook - KDE Settings) Ensure NumLock is turned on at startup 
         community.general.kdeconfig:
           path: "{{ input_config }}"
           values:
@@ -28,12 +28,12 @@
           ansible_facts.packages['kwriteconfig5'] is defined
 
   ################## SSH Keys ########################
-  - name: "Ensure {{ ansible_user_id }} has an ssh directory"
+  - name: "(User Playbook - SSH Keys) Ensure {{ ansible_user_id }} has an ssh directory"
     ansible.builtin.file:
       path: "{{ ssh_dir }}"
       state: directory
       mode: '0700'
 
-  - name: "Ensure {{ ansible_user_id }} account has a default ssh key pair generated"
+  - name: "(User Playbook - SSH Keys) Ensure {{ ansible_user_id }} account has a default ssh key pair generated"
     community.crypto.openssh_keypair:
       path: "{{ ssh_key_path }}"
