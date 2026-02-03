@@ -3,7 +3,6 @@
   hosts: desktop
   become_user: "{{ provisioned_user }}"
   vars:
-    power_config: "{{ ansible_env.HOME }}/.config/powerdevilrc"
     input_config: "{{ ansible_env.HOME }}/.config/kcminputrc"
     ssh_dir: "{{ ansible_env.HOME }}/.ssh"
     ssh_key_path: "{{ ssh_dir }}/id_rsa"
@@ -23,31 +22,6 @@
               key: NumLock
               value: "0"
           mode: '0600'
-
-      ################## Power Settings ########################
-      # --- AC POWER SETTINGS (Plugged In) ---
-
-      - name: "Ensure AC: Screen Dimming is set properly"
-        ansible.builtin.ini_file:
-          path: "{{ power_config }}"
-          section: "[AC][Display]"
-          option: DimDisplayIdleTimeoutSec
-          value: "275"
-          mode: '0600'
-
-      - name: "Ensure AC: Screen Turn Off is set properly"
-        ansible.builtin.ini_file:
-          path: "{{ power_config }}"
-          section: "[AC][Display]"
-          option: TurnOffDisplayIdleTimeoutSec
-          value: "360" # 6 minutes
-
-      - name: "Ensure AC: Auto suspend is off if laptop Screen is closed"
-        ansible.builtin.ini_file:
-          path: "{{ power_config }}"
-          section: "[AC][SuspendAndShutdown]"
-          option: AutoSuspendAction
-          value: "0" # Disabled
 
     # Only run if KDE is actually installed
     when: ansible_facts.packages['plasma-desktop'] is defined or 

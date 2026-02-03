@@ -1,5 +1,6 @@
 roles:
 # - src: gantsign.golang
+  - src: https://github.com/billwheatley/brave-browser-role
   - src: https://github.com/billwheatley/ansible-role-visual-studio-code.git
   - src: https://github.com/billwheatley/oc-role
   - src: https://github.com/billwheatley/argocd-cli-role

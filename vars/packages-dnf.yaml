@@ -46,6 +46,7 @@ base_packages:
   - yq
   - podman
   - sshpass
+  - printer-driver-brlaser
 
 kde_packages:
   - "@KDE Plasma Workspaces"
