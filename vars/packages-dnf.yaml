@@ -55,6 +55,13 @@ kde_packages:
   - libdbusmenu-gtk3
   - kdenlive
   - kompare
+  - kcalc
+  - gwenview
+  - okular
+  - kolourpaint
+  - krdc
+  - kgpg
+  - kamoso
 
 fusion_free_packages:
   - v4l2loopback
