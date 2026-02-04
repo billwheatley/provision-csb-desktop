@@ -6,10 +6,11 @@ function show_help {
     echo Provision your Fedora CSB Desktop
     echo 
     echo OPTIONS:
-    echo "   -p      Skip Package Manager Updates (does not disable updates from roles)"
-    echo "   -r      Skip Requirements Definition Updates (ie: Roles and Collections)"
-    echo "   -s      Skip Snap Package Install/Updates (useful if store is down)"
-    echo "   -v      Verbose output"
+    echo "   -p               Skip Package Manager Updates (does not disable updates from roles)"
+    echo "   -r               Skip Requirements Definition Updates (ie: Roles and Collections)"
+    echo "   -s               Skip Snap Package Install/Updates (useful if store is down)"
+    echo "   -t  "tag1,tag2"  Only run the specified tags (useful for debugging)"
+    echo "   -v               Verbose output"
 }
 
 # Function to add or update the skip tag list
@@ -22,8 +23,10 @@ function add_skip_tag {
 }
 
 verbose=""
+skip_tag_directive=""
+tag_directive=""
 
-while getopts "hprsv" opt; do
+while getopts "hprst:v" opt; do
     case "$opt" in
     h)
         show_help
@@ -37,6 +40,10 @@ while getopts "hprsv" opt; do
         ;;
     s)  
         add_skip_tag "snap_pkgs"
+        ;;
+    t)
+        tags="$OPTARG"
+        tag_directive="--tags $tags"
         ;;
     v)  
         verbose="-v"
@@ -60,4 +67,5 @@ if [ ! "$requirements_updates" == "skip" ]; then
     ansible-galaxy install -f -r requirements.yaml
 fi
 
-sudo ansible-playbook provision.yaml ${verbose} --extra-vars="for_user=${LOCAL_USER} ${skip_tag_directive}"
+sudo ansible-playbook provision.yaml ${verbose} --extra-vars="for_user=${LOCAL_USER}" ${skip_tag_directive} ${tag_directive}
+
