@@ -75,18 +75,6 @@
   ################################################################################
 
 
-############################## Firewall ########################################
-
-  - name: (Firewall) Allow KDE Connect service in firewalld
-    ansible.posix.firewalld:
-      service: kdeconnect
-      permanent: yes
-      state: enabled
-      zone: FedoraWorkstation
-      immediate: yes
-    tags:
-      - firewall
-
 ############################## Printers ########################################
   - name: (Printers) Ensure avahi-daemon (for automatic printer detection) is enable and started
     systemd:

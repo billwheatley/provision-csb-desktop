@@ -5,15 +5,22 @@
   tags:
     - user_settings
   vars:
-    input_config: "{{ ansible_env.HOME }}/.config/kcminputrc"
-    kwin_config: "{{ ansible_env.HOME }}/.config/kwinrc"
+    config_dir: "{{ ansible_env.HOME }}/.config"
+    input_config: "{{ config_dir }}/kcminputrc"
+    kwin_config: "{{ config_dir }}/kwinrc"
+    csb_config: "{{ config_dir }}/csb-fedora.yml"
     ssh_dir: "{{ ansible_env.HOME }}/.ssh"
     ssh_key_path: "{{ ssh_dir }}/id_rsa"
 
   tasks:
-  - name: (User Playbook - KDE Settings) Gather Package Facts
+  - name: (User Playbook) Gather Package Facts
     ansible.builtin.package_facts:
       manager: auto
+  - name: (User Playbook) Ensure the config directory exists
+    ansible.builtin.file:
+      path: "{{ config_dir }}"
+      state: directory
+      mode: '0755'
   - name: (User Playbook - KDE Settings) Configure KDE Settings
     block:
       ################## Input Settings ########################
@@ -54,6 +61,16 @@
           create: true # Create the file if it does not exist
           mode: '0640'
           state: present
+
+      ############## CSB - Firewall Customizations ###################
+      # NOTE: this is specific to Fedora CSB (wouldn't do anything for public fedora distros)
+      - name: (User Playbook) Ensure the CSB customization file has expected customizations
+        ansible.builtin.copy:
+          dest: "{{ csb_config }}"
+          content: |
+            redhat_csb_firewall_user_defined_services:
+              - kdeconnect
+          mode: '0644'
 
     # Only run if KDE is actually installed
     when: ansible_facts.packages['plasma-desktop'] is defined or 
