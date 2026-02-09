@@ -2,8 +2,11 @@
 - name: User Settings Playbook
   hosts: desktop
   become_user: "{{ provisioned_user }}"
+  tags:
+    - user_settings
   vars:
     input_config: "{{ ansible_env.HOME }}/.config/kcminputrc"
+    kwin_config: "{{ ansible_env.HOME }}/.config/kwinrc"
     ssh_dir: "{{ ansible_env.HOME }}/.ssh"
     ssh_key_path: "{{ ssh_dir }}/id_rsa"
 
@@ -23,6 +26,35 @@
               value: "0"
           mode: '0600'
 
+      - name: (User Playbook - KDE Settings) Ensure Night Light is Active and configured to specifications
+        community.general.kdeconfig:
+          path: "{{ kwin_config }}"
+          values:
+            - group: NightColor
+              key: Active
+              value: "true"
+            - group: NightColor
+              key: Mode
+              value: "Location"
+            - group: NightColor
+              key: NightTemperature
+              value: "1900"
+            - group: NightColor
+              key: DayTemperature
+              value: "6500"
+        notify:
+          - Reconfigure KWin
+
+      ############## Fix for Libreoffice scaling issues ######################
+      # Fixes odd menu / icon scaling issue with: Wayland + Plasma + Multiple monitors of different resolutions (mixed DPI)
+      - name: "(User Playbook) Ensure Libreoffice is set to scale properly for {{ ansible_user_id }}"
+        ansible.builtin.lineinfile:
+          path: "{{ ansible_env.HOME }}/.bashrc"
+          line: 'export SAL_USE_VCLPLUGIN=gtk3 libreoffice'
+          create: true # Create the file if it does not exist
+          mode: '0640'
+          state: present
+
     # Only run if KDE is actually installed
     when: ansible_facts.packages['plasma-desktop'] is defined or 
           ansible_facts.packages['kwriteconfig5'] is defined
@@ -37,3 +69,13 @@
   - name: "(User Playbook - SSH Keys) Ensure {{ ansible_user_id }} account has a default ssh key pair generated"
     community.crypto.openssh_keypair:
       path: "{{ ssh_key_path }}"
+
+  ################## Handlers ########################
+  handlers:
+    - name: "KDE Handlers"
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_user_uid }}/bus"
+      block:
+        - name: Reconfigure KWin
+          ansible.builtin.command: 
+            cmd: qdbus-qt6 org.kde.KWin /KWin org.kde.KWin.reconfigure

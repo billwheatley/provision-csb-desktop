@@ -84,6 +84,8 @@
       state: enabled
       zone: FedoraWorkstation
       immediate: yes
+    tags:
+      - firewall
 
 ############################## Printers ########################################
   - name: (Printers) Ensure avahi-daemon (for automatic printer detection) is enable and started
