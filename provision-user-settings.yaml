@@ -8,6 +8,8 @@
     config_dir: "{{ ansible_env.HOME }}/.config"
     input_config: "{{ config_dir }}/kcminputrc"
     kwin_config: "{{ config_dir }}/kwinrc"
+    plasma_env_dir: "{{ config_dir }}/plasma-workspace/env"
+    libreoffice_fix_script: "{{ plasma_env_dir }}/libreoffice-fix.sh"
     csb_config: "{{ config_dir }}/csb-fedora.yml"
     ssh_dir: "{{ ansible_env.HOME }}/.ssh"
     ssh_key_path: "{{ ssh_dir }}/id_rsa"
@@ -41,9 +43,6 @@
               key: Active
               value: "true"
             - group: NightColor
-              key: Mode
-              value: "Location"
-            - group: NightColor
               key: NightTemperature
               value: "1900"
             - group: NightColor
@@ -54,13 +53,27 @@
 
       ############## Fix for Libreoffice scaling issues ######################
       # Fixes odd menu / icon scaling issue with: Wayland + Plasma + Multiple monitors of different resolutions (mixed DPI)
-      - name: "(User Playbook) Ensure Libreoffice is set to scale properly for {{ ansible_user_id }}"
+      - name: "(User Playbook) Ensure Libreoffice is set to scale properly for if launched from a commandline"
         ansible.builtin.lineinfile:
           path: "{{ ansible_env.HOME }}/.bashrc"
-          line: 'export SAL_USE_VCLPLUGIN=gtk3 libreoffice'
+          line: "export SAL_USE_VCLPLUGIN=gtk3"
           create: true # Create the file if it does not exist
           mode: '0640'
           state: present
+
+      - name: (User Playbook) Ensure KDE Plasma environment directory exists  
+        ansible.builtin.file:
+          path: "{{ plasma_env_dir }}"
+          state: directory
+          mode: '0750'
+
+      - name: (User Playbook) Ensure the LibreOffice fix script is in place
+        ansible.builtin.copy:
+          dest: "{{ libreoffice_fix_script }}"
+          content: |
+            #!/bin/sh
+            export SAL_USE_VCLPLUGIN=gtk3
+          mode: '0755'
 
       ############## CSB - Firewall Customizations ###################
       # NOTE: this is specific to Fedora CSB (wouldn't do anything for public fedora distros)
