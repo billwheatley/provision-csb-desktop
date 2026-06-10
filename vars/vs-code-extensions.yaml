@@ -5,6 +5,7 @@ vs_code_extensions:
   - davidanson.vscode-markdownlint
   - dgileadi.java-decompiler
   - docker.docker
+  - github.copilot-chat
   - golang.go
   - ms-azuretools.vscode-containers
   - ms-azuretools.vscode-docker
@@ -12,6 +13,7 @@ vs_code_extensions:
   - ms-python.python
   - ms-python.vscode-pylance
   - ms-python.vscode-python-envs
+  - redhat.fabric8-analytics
   - redhat.java
   - redhat.vscode-openshift-connector
   - redhat.vscode-redhat-account
@@ -20,8 +22,6 @@ vs_code_extensions:
   - redhat.vscode-yaml
   - streetsidesoftware.code-spell-checker
   - tomoki1207.pdf
-  - visualstudioexptteam.intellicode-api-usage-examples
-  - visualstudioexptteam.vscodeintellicode
   - vscjava.vscode-gradle
   - vscjava.vscode-java-debug
   - vscjava.vscode-java-dependency
@@ -29,4 +29,5 @@ vs_code_extensions:
   - vscjava.vscode-java-test
   - vscjava.vscode-maven
   - zhangciwu.swig-tpl
+
 

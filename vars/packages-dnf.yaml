@@ -47,6 +47,7 @@ base_packages:
   - podman
   - sshpass
   - printer-driver-brlaser
+  - cloc
 
 kde_packages:
   - "@KDE Plasma Workspaces"
