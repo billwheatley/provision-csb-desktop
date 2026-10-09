@@ -6,7 +6,7 @@ printers:
     driver: everywhere
     
   - name: "Brother_Color"
-    uri: "ipp://l3220cdw.local"
+    uri: "ipp://l3220cdw"
     description: "Brother HL-L3220CDW Color Laser"
     location: "Home Office"
     driver: everywhere
